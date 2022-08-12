@@ -1,17 +1,17 @@
-const mountThreadLiker = () => {
+mountThreadLiker = () => {
     // The author of the opened tweet
-    const tweeterName = window.location.pathname.split('/')[1]
+    tweeterName = window.location.pathname.split('/')[1]
 
     // filter tweets sended by other users
-    const allTweeterTweetsNodes = Array.from(document.querySelectorAll('[data-testid="tweet"]')) // texts of tweets
+    allTweeterTweetsNodes = Array.from(document.querySelectorAll('[data-testid="tweet"]')) // texts of tweets
         .filter(parentNode => parentNode.querySelector('a[tabindex="-1"]').getAttribute('href').endsWith(tweeterName))
 
     // find like buttons in tweeter's tweets
-    const allLikeTweeterTweetsButtons = Array.from(allTweeterTweetsNodes)
+    allLikeTweeterTweetsButtons = Array.from(allTweeterTweetsNodes)
         .map(tweetNode => tweetNode.querySelector('[aria-label*="Like"][role="button"]'))
         .map(likeButtonContainer => likeButtonContainer?.children[0].children[0])
 
-    const likeAllTweeterTweets = () => {
+    likeAllTweeterTweets = () => {
         // like the whole thread
         allLikeTweeterTweetsButtons.forEach(likeButton => {
             likeButton.click()
@@ -19,10 +19,14 @@ const mountThreadLiker = () => {
     }
 
     // hold 0.8s -> like all, click -> like one
-    const handleLike = event => {
-        const likeAllTimer = setTimeout(likeAllTweeterTweets, 800)
-        event.target.addEventListener('mouseup', () => {
+    handleLike = event => {
+        const likeAllTimer = setTimeout(() => {
             clearTimeout(likeAllTimer)
+            likeAllTweeterTweets()
+        }, 800)
+        event.target.addEventListener('mouseup', event => {
+            clearTimeout(likeAllTimer)
+            event.preventDefault()
         })
     }
 
@@ -32,11 +36,13 @@ const mountThreadLiker = () => {
         likeButton.querySelector('svg').style.transition = '0.2s ease-in'
         likeButton.addEventListener('click', () => {
             setTimeout(() => {
-                likeButton.querySelector('svg').style.color = 'rgb(249,24,128)'
+                if (likeButton.querySelector('svg')) {
+                    likeButton.querySelector('svg').style.color = 'rgb(249,24,128)'
+                }
             }, 100)
         })
 
-        if (likeButton.getAttribute('name') != 'ListenerAdded') {
+        if (likeButton.getAttribute('name') !== 'ListenerAdded') {
             likeButton.addEventListener('mousedown', handleLike)
 
             // Twitter only renders tweets in the viewport
@@ -46,7 +52,7 @@ const mountThreadLiker = () => {
     })
 }
 
-const ThreadLikerTrigger = () => {
+ThreadLikerMounterTrigger = () => {
     const loadTimer = setInterval(() => {
         // load the extension when the current thread loaded
         if (document.querySelectorAll('[data-testid="tweet"]').length > 0) {
@@ -56,12 +62,12 @@ const ThreadLikerTrigger = () => {
     }, 256)
 }
 
-let url, tweetsCount
 // listen to url change or more tweets load
+url = '', tweetsCount = 0
 setInterval(() => {
     if (window.location.href !== url || document.querySelectorAll('[data-testid="tweet"]').length !== tweetsCount) {
         url = window.location.href
         tweetsCount = document.querySelectorAll('[data-testid="tweet"]').length
-        ThreadLikerTrigger()
+        ThreadLikerMounterTrigger()
     }
 }, 256);
