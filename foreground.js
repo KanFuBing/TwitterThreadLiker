@@ -36,7 +36,13 @@ const mountThreadLiker = () => {
             }, 100)
         })
 
-        likeButton.addEventListener('mousedown', handleLike)
+        if (likeButton.getAttribute('name') != 'ListenerAdded') {
+            likeButton.addEventListener('mousedown', handleLike)
+
+            // Twitter only renders tweets in the viewport
+            // So listener may be added multiple times, checking is necessary
+            likeButton.setAttribute('name', 'ListenerAdded')
+        }
     })
 }
 
@@ -47,14 +53,15 @@ const ThreadLikerTrigger = () => {
             clearInterval(loadTimer)
             mountThreadLiker()
         }
-    }, 1000)
+    }, 256)
 }
 
-let url
-// listen to url change
+let url, tweetsCount
+// listen to url change or more tweets load
 setInterval(() => {
-    if (window.location.href !== url) {
+    if (window.location.href !== url || document.querySelectorAll('[data-testid="tweet"]').length !== tweetsCount) {
         url = window.location.href
+        tweetsCount = document.querySelectorAll('[data-testid="tweet"]').length
         ThreadLikerTrigger()
     }
-}, 1000);
+}, 256);

@@ -1,6 +1,6 @@
 {
     "name": "Twitter Thread Liker",
-    "version": "0.1",
+    "version": "0.2",
     "author": "窗外浮冰 (@KanFuBing)",
     "description": "Sometimes we want to like all tweets of a good thread, but it's a bit of a hassle. Now this extension enables you to like all tweets of the thread tweeter with a simple one-second hold.",
     "manifest_version": 3,
